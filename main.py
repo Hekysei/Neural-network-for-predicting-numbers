@@ -3,7 +3,7 @@ import numpy as np
 
 # Power of two - size of the predicted number
 power = 7
-# Prediction error - 1/mult
+# Prediction error - 1/(2**mult)
 mult = 2
 # Number of hidden neurons
 hid = 30
@@ -12,11 +12,12 @@ learning_rate = 0.02
 # Control training with zero error
 control_training = 6000
 
-
+#delta_num to correct negative numbers in the original dataframe
 delta_num = 8*(2**mult)
 inp = power+mult
 out = power+mult
 
+# decimal -> bin
 def to_bin(n):
     n *= 2**mult
     n += delta_num
@@ -25,20 +26,12 @@ def to_bin(n):
         res = "0"+res
     return res
 
+# bin -> decimal
 def unbin(ls):
     ls = [str(round(x[0])) for x in ls]
     res = int("".join(ls), 2) - delta_num
     res /= 2**mult
     return res
-
-def get_learned():
-    # Put output of learning here
-    weights_input_to_hidden = np.array(...)
-    weights_hidden_to_output = np.array(...)
-    bias_input_to_hidden = np.array(...)
-    bias_hidden_to_output = np.array(...)
-
-    return weights_input_to_hidden, weights_hidden_to_output, bias_input_to_hidden, bias_hidden_to_output
 
 
 def nn_work(weights_input_to_hidden,
@@ -54,6 +47,14 @@ def nn_work(weights_input_to_hidden,
 
     return output, hidden
 
+def get_learned():
+    # Put output of learning here
+    weights_input_to_hidden = np.array(...)
+    weights_hidden_to_output = np.array(...)
+    bias_input_to_hidden = np.array(...)
+    bias_hidden_to_output = np.array(...)
+
+    return weights_input_to_hidden, weights_hidden_to_output, bias_input_to_hidden, bias_hidden_to_output
 
 def learn_nn(df):
     weights_input_to_hidden = np.random.uniform(-0.5, 0.5, (hid, inp))
@@ -93,12 +94,10 @@ def learn_nn(df):
             delta_hidden = np.transpose(weights_hidden_to_output) @ delta_output * (hidden * (1 - hidden))
             weights_input_to_hidden += -learning_rate * delta_hidden @ np.transpose(q)
             bias_input_to_hidden += -learning_rate * delta_hidden
-
         if lose == 0:
             control_count += 1
         else:
             control_count = 0
-
         print(f'Lose: {lose}\n')
 
     print("Copy the output below and put it in the get_learned() function\n")
